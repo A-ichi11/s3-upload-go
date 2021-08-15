@@ -10,7 +10,7 @@ import (
 )
 
 // 画像のPath
-var filePath = "image/sakura.jpeg"
+var filePath = "./sakura.jpeg"
 
 // S3のバケット名
 var bucket = "test-bucket-0814"
@@ -36,7 +36,7 @@ func main() {
 		SharedConfigState: session.SharedConfigEnable,
 	}))
 
-	// S3をNewします
+	// S3クライアントを作成します
 	svc := s3.New(newSession, &aws.Config{
 		Region: aws.String(awsRegion),
 	})
