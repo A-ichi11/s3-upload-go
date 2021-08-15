@@ -31,14 +31,6 @@ func main() {
 	// 最後に画像ファイルを閉じます
 	defer imageFile.Close()
 
-	// Uploaderを作成し、S3にアップロードします
-	// uploader := s3manager.NewUploader(newSession)
-	// _, err = uploader.Upload(&s3manager.UploadInput{
-	// 	Bucket: aws.String(bucket),
-	// 	Key:    aws.String(key),
-	// 	Body:   imageFile,
-	// })
-
 	// sessionを作成します
 	newSession := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
