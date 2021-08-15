@@ -6,7 +6,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"github.com/aws/aws-sdk-go/service/s3"
 )
 
 // 画像のPath
@@ -22,15 +22,6 @@ var key = "image/sakura"
 var awsRegion = "ap-northeast-1"
 
 func main() {
-	putS3Object()
-}
-
-func putS3Object() {
-
-	// sessionを作成します
-	s := session.Must(session.NewSessionWithOptions(session.Options{
-		SharedConfigState: session.SharedConfigEnable,
-	}))
 
 	// 画像を読み込みます
 	imageFile, err := os.Open(filePath)
@@ -41,13 +32,35 @@ func putS3Object() {
 	defer imageFile.Close()
 
 	// Uploaderを作成し、S3にアップロードします
-	uploader := s3manager.NewUploader(s)
-	_, err = uploader.Upload(&s3manager.UploadInput{
-		Bucket: aws.String(bucket),
-		Key:    aws.String(key),
-		Body:   imageFile,
+	// uploader := s3manager.NewUploader(newSession)
+	// _, err = uploader.Upload(&s3manager.UploadInput{
+	// 	Bucket: aws.String(bucket),
+	// 	Key:    aws.String(key),
+	// 	Body:   imageFile,
+	// })
+
+	// sessionを作成します
+	newSession := session.Must(session.NewSessionWithOptions(session.Options{
+		SharedConfigState: session.SharedConfigEnable,
+	}))
+
+	// S3をNewします
+	svc := s3.New(newSession, &aws.Config{
+		Region: aws.String(awsRegion),
 	})
-	// エラーハンドリング
+
+	// S3にアップロードする内容をparamsに入れます
+	params := &s3.PutObjectInput{
+		// Bucket アップロード先のS3のバケット
+		Bucket: aws.String(bucket),
+		// Key アップロードする際のオブジェクト名
+		Key: aws.String(key),
+		// Body アップロードする画像ファイル
+		Body: imageFile,
+	}
+
+	// S3にアップロードします
+	_, err = svc.PutObject(params)
 	if err != nil {
 		log.Fatal(err)
 	}
